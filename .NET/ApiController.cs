@@ -157,5 +157,32 @@ namespace Sabio.Web.Api.Controllers
             }
             return StatusCode(code, response);
         }
+        [HttpGet("search/partner")]
+        public ActionResult<ItemResponse<Paged<Partner>>> GetPageSearch(int pageIndex, int pageSize, string search)
+        {
+            int code = 200;
+            BaseResponse response = null;
+            try
+            {
+                Paged<Partner> page = _service.GetPageSearch(pageIndex, pageSize, search);
+
+                if (page == null)
+                {
+                    code = 404;
+                    response = new ErrorResponse("App Resource not found.");
+                }
+                else
+                {
+                    response = new ItemResponse<Paged<Partner>> { Item = page };
+                }
+            }
+            catch (Exception ex)
+            {
+                code = 500;
+                response = new ErrorResponse(ex.Message);
+                base.Logger.LogError(ex.ToString());
+            }
+            return StatusCode(code, response);
+        }
     }
 }
